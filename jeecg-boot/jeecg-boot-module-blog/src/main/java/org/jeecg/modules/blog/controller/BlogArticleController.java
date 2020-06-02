@@ -175,6 +175,7 @@ public class BlogArticleController extends JeecgController<BlogArticle, IBlogArt
 	 @ApiOperation(value="文章发表-发表文章",notes = "发表文章-发表文章")
 	 @PostMapping("/articles/publish")
 	 public Result<?> publishArticle(@RequestBody BlogArticle blogArticle){
+    	log.info("blogArticle: "+blogArticle.toString());
 		 String sysOrgCode = getUser().getOrgCode();
 		 blogArticle.setSysOrgCode(sysOrgCode);
 		 blogArticle.setCreateBy(getUser().getUsername());

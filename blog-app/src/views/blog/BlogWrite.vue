@@ -193,10 +193,6 @@
               blogCategory: this.articleForm.category,
               tags: tags,
               content: this.articleForm.editor.value
-              // body: {
-              //   content: this.articleForm.editor.value,
-              //   contentHtml: this.articleForm.editor.ref.d_render
-              // }
             }
             this.publishVisible = false;
             let loading = this.$loading({

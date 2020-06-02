@@ -1,24 +1,23 @@
 package org.jeecg.modules.blog.entity;
 
 import java.io.Serializable;
-import java.io.UnsupportedEncodingException;
 import java.util.Date;
-import java.math.BigDecimal;
 import java.util.List;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import io.swagger.annotations.ApiOperation;
 import lombok.Data;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.jeecgframework.poi.excel.annotation.Excel;
-import org.jeecg.common.aspect.annotation.Dict;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
+
+import javax.persistence.Transient;
 
 /**
  * @Description: 文章
@@ -99,5 +98,7 @@ public class BlogArticle implements Serializable {
 	private List<BlogTag> blogTagList;
 
 	@ApiModelProperty(value = "文章分类")
+	@TableField(exist = false)
+	@Transient
 	private BlogCategory blogCategory;
 }
