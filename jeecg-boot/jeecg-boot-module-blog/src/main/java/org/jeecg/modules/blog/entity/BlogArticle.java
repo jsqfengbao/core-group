@@ -95,6 +95,8 @@ public class BlogArticle implements Serializable {
     private Integer isEnabled;
 
 	@ApiModelProperty(value = "标签列表")
+	@Transient
+	@TableField(exist = false)
 	private List<BlogTag> blogTagList;
 
 	@ApiModelProperty(value = "文章分类")
