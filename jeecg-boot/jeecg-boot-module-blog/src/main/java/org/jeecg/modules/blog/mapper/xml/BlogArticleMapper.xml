@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.blog.mapper.BlogArticleMapper">
+
+    <resultMap id="articleResultMap" type="org.jeecg.modules.blog.entity.BlogArticle">
+        <result property="id" column="id"></result>
+        <result property="createBy" column="createBy"></result>
+        <result property="commentCounts" column="commentCounts" javaType="java.lang.Integer"></result>
+        <result property="createTime" column="createTime"></result>
+        <result property="summary" column="summary"></result>
+        <result property="content" column="content"></result>
+        <result property="title" column="title"></result>
+        <result property="viewCounts" column="viewCounts"  javaType="java.lang.Integer"></result>
+        <result property="weight" column="weight" ></result>
+        <association  property="blogCategory" javaType="org.jeecg.modules.blog.entity.BlogCategory">
+            <result property="id" column="categoryId"></result>
+            <result property="categoryname" column="categoryname"></result>
+        </association>
+        <collection property="blogTagList" ofType="org.jeecg.modules.blog.entity.BlogTag">
+            <result property="id" column="tagId"></result>
+            <result property="tagname" column="tagname"></result>
+        </collection>
+    </resultMap>
+    <!--查询文章列表，带标签名-->
+    <select id="queryArticlesApi" resultMap="articleResultMap">
+        select a.id,
+        a.create_by createBy,
+        IFNULL(a.comment_counts,0) commentCounts,
+        a.create_time createTime,
+        a.summary summary,
+        a.title title,
+        IFNULL(a.view_counts,0) viewCounts,
+        IFNULL(a.weight,0) weight,
+        tag.id tagId,
+        tag.tagname tagname
+        from blog_article a left join blog_article_tag atag on a.id = atag.article_id LEFT JOIN blog_tag tag on atag.tag_id = tag.id
+        where a.is_enabled = 1
+        <if test="categoryId != null and categoryId != ''">
+            and a.category_id = #{categoryId}
+        </if>
+        <if test="tagId != null and tagId != ''">
+            and atag.tag_id = #{tagId}
+        </if>
+        <if test="year != null and year != ''">
+            and year(a.create_time) = #{year}
+        </if>
+        <if test="month != null and month != ''">
+            and month(a.create_time) = #{month}
+        </if>
+        order by a.create_time desc
+        limit #{currIndex}, #{pageSize}
+    </select>
+    <!--查询最热文章，按浏览量查询，排名前6-->
+    <select id="queryArticlesApiByViewCountsAndLimit" resultType="org.jeecg.modules.blog.bo.ArticleHotBo">
+        select a.id,a.title
+        from blog_article a
+        where a.is_enabled = 1
+        order by a.view_counts desc
+        limit 6;
+    </select>
+    <!--查询最新文章，按发布日期排名前6-->
+    <select id="queryArticlesApiByCreateTimeAndLimit" resultType="org.jeecg.modules.blog.bo.ArticleHotBo">
+        select a.id,a.title
+        from blog_article a
+        where a.is_enabled = 1
+        order by a.create_time desc
+        limit 6;
+    </select>
+
+    <!--查询文章详细信息，按文章ID-->
+    <select id="queryArticlesApiById" resultMap="articleResultMap">
+        SELECT
+            a.id,
+            a.create_by createBy,
+            IFNULL(a.comment_counts,0) commentCounts,
+            a.create_time createTime,
+            a.summary summary,
+            a.content content,
+            a.title title,
+            IFNULL(a.view_counts,0) viewCounts,
+            IFNULL(a.weight,0) weight,
+            a.category_id categoryId,
+            tag.tagname tagname,
+            tag.id tagId,
+            cate.categoryname categoryName
+        FROM
+            blog_article a
+        left join blog_category cate on a.category_id = cate.id
+        LEFT JOIN blog_article_tag atag ON a.id = atag.article_id
+        LEFT JOIN blog_tag tag ON atag.tag_id = tag.id
+        where a.is_enabled = 1 and a.id = #{articleId}
+    </select>
+    <!--查询该分类下的所有文章-->
+    <select id="queryArticlesApiByCategoryId" resultMap="articleResultMap">
+        SELECT
+            a.id,
+            a.create_by createBy,
+            IFNULL(a.comment_counts,0) commentCounts,
+            a.create_time createTime,
+            a.summary summary,
+            a.content content,
+            a.title title,
+            IFNULL(a.view_counts,0) viewCounts,
+            IFNULL(a.weight,0) weight,
+            a.category_id categoryId,
+            tag.tagname tagname,
+            tag.id tagId
+        FROM
+            blog_article a
+        LEFT JOIN blog_article_tag atag ON a.id = atag.article_id
+        LEFT JOIN blog_tag tag ON atag.tag_id = tag.id
+        where a.is_enabled = 1 and a.category_id = #{categoryId}
+        limit #{currIndex},#{pageSize}
+    </select>
+    <!--查询标签下的文章列表-->
+    <select id="queryArticlesApiByTagId" resultMap="articleResultMap">
+        SELECT
+            a.id,
+            a.create_by createBy,
+            IFNULL(a.comment_counts,0) commentCounts,
+            a.create_time createTime,
+            a.summary summary,
+            a.content content,
+            a.title title,
+            IFNULL(a.view_counts,0) viewCounts,
+            IFNULL(a.weight,0) weight,
+            a.category_id categoryId,
+            tag.tagname tagname,
+            tag.id tagId
+        FROM
+            blog_article a
+        LEFT JOIN blog_article_tag atag ON a.id = atag.article_id
+        LEFT JOIN blog_tag tag ON atag.tag_id = tag.id
+        where a.is_enabled = 1 and tag.id = #{tagId}
+        limit #{currIndex},#{pageSize}
+    </select>
+    <!--文章归档：按年月归档-->
+    <select id="queryArticlesApiByArchives" resultType="org.jeecg.modules.blog.bo.ArchivesBo">
+        select year(create_time) as year,month(create_time) as month,count(*) as count
+        from blog_article
+        group by year(create_time),month(create_time)
+    </select>
+</mapper>

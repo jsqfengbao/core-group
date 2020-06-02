@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.blog.mapper.BlogCommentMapper">
+
+    <resultMap id="commentResultMap" type="org.jeecg.modules.blog.bo.CommentBo">
+
+        <id property="id" column="id"></id>
+        <result property="level" column="level"></result>
+        <result property="content" column="content"></result>
+        <result property="createDate" column="createDate"></result>
+        <association property="author" javaType="org.jeecg.modules.blog.entity.SysUser">
+            <id property="id" column="authorId"></id>
+            <result property="username" column="authorUsername"></result>
+            <result property="avatar" column="authorAvatar"></result>
+        </association>
+        <collection column="{articleId=articleId,parentId=id}" property="children" select="getChildren" javaType="java.util.ArrayList" ofType="org.jeecg.modules.blog.bo.CommentBo"></collection>
+    </resultMap>
+    <resultMap id="nextCommentResultMap" type="org.jeecg.modules.blog.bo.CommentBo">
+        <result property="id" column="id"></result>
+        <result property="level" column="level"></result>
+        <result property="content" column="content"></result>
+        <result property="createDate" column="createDate"></result>
+        <association property="toUser" javaType="org.jeecg.modules.blog.entity.SysUser">
+            <id property="id" column="toUserId"></id>
+            <result property="username" column="toUsername"></result>
+            <result property="avatar" column="toUserAvatar"></result>
+        </association>
+        <association property="author" javaType="org.jeecg.modules.blog.entity.SysUser">
+            <result property="id" column="authorId"></result>
+            <result property="username" column="authorUsername"></result>
+            <result property="avatar" column="authorAvatar"></result>
+         </association>
+    </resultMap>
+    <select id="getChildren" resultMap="nextCommentResultMap">
+        SELECT
+            c.id,
+            c.level,
+            c.content,
+            c.create_time createDate,
+            u.id as authorId,
+            u.username as authorUsername,
+            u.avatar as authorAvatar,
+            tou.id as toUserId,
+            tou.username as toUsername,
+            tou.avatar as toUserAvatar
+        FROM
+            blog_comment c
+        left join sys_user u on c.author_id = u.id
+        left join sys_user tou on c.to_uid = tou.id
+        where c.article_id = #{articleId} and c.parent_id = #{parentId}
+    </select>
+
+    <!--根据文章ID获取评论-->
+    <select id="getCommentsByArticleId" resultMap="commentResultMap">
+        SELECT
+            c.id,
+            c.level,
+            c.content,
+            c.create_time createDate,
+            c.article_id articleId,
+            c.parent_id parentId,
+            u.id as authorId,
+            u.username as authorUsername,
+            u.avatar as authorAvatar,
+            tou.id as toUserId,
+            tou.username as toUsername,
+            tou.avatar as toUserAvatar
+        FROM
+            blog_comment c
+        left join sys_user u on c.author_id = u.id
+        left join sys_user tou on c.to_uid = tou.id
+        where c.article_id = #{articleId} and c.level = '0'
+    </select>
+</mapper>

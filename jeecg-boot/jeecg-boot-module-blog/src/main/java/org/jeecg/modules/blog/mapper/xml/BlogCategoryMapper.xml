@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.jeecg.modules.blog.mapper.BlogCategoryMapper">
+
+    <select id="queryCategorysApiList" resultType="org.jeecg.modules.blog.entity.BlogCategory">
+        select category.id,category.categoryname,category.avatar,
+        count(a.category_id) articlesNum
+        from blog_category category
+        LEFT JOIN blog_article a ON a.category_id = category.id
+        GROUP BY category.id
+    </select>
+
+    <select id="queryCategoryApiById" resultType="org.jeecg.modules.blog.entity.BlogCategory">
+        select category.id,category.categoryname,category.avatar,category.description,
+        count(a.category_id) articlesNum
+        from blog_category category
+        left join blog_article a on a.category_id = category.id
+        where category.id = #{categoryId}
+        group by category.id
+    </select>
+</mapper>
