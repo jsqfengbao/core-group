@@ -16,7 +16,6 @@
 	<modules>
 		<module>jeecg-boot-base-common</module>
 		<module>jeecg-boot-module-system</module>
-        <module>jeecg-boot-module-finance</module>
         <module>jeecg-boot-module-blog</module>
     </modules>
 

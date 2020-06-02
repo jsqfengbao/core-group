@@ -38,11 +38,6 @@
 		</dependency>
 		<dependency>
 			<groupId>org.jeecgframework.boot</groupId>
-			<artifactId>jeecg-boot-module-finance</artifactId>
-			<version>2.1.4</version>
-		</dependency>
-		<dependency>
-			<groupId>org.jeecgframework.boot</groupId>
 			<artifactId>jeecg-boot-module-blog</artifactId>
 			<version>2.1.4</version>
 		</dependency>
