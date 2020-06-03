@@ -191,7 +191,7 @@
               title: this.articleForm.title,
               summary: this.articleForm.summary,
               blogCategory: this.articleForm.category,
-              tags: tags,
+              blogTagList: tags,
               content: this.articleForm.editor.value
             }
             this.publishVisible = false;
@@ -203,7 +203,7 @@
             publishArticle(article).then((data) => {
               loading.close();
               that.$message({message: '发布成功啦', type: 'success', showClose: true})
-              that.$router.push({path: `/view/${data.data.articleId}`})
+              that.$router.push({path: `/view/${data.result.id}`})
             }).catch((error) => {
               loading.close();
               if (error !== 'error') {

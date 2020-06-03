@@ -22,7 +22,10 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.extern.slf4j.Slf4j;
 
 import org.jeecg.modules.blog.entity.BlogArticle;
+import org.jeecg.modules.blog.entity.BlogArticleTag;
+import org.jeecg.modules.blog.entity.BlogTag;
 import org.jeecg.modules.blog.service.IBlogArticleService;
+import org.jeecg.modules.blog.service.IBlogArticleTagService;
 import org.jeecgframework.poi.excel.ExcelImportUtil;
 import org.jeecgframework.poi.excel.def.NormalExcelConstants;
 import org.jeecgframework.poi.excel.entity.ExportParams;
@@ -52,7 +55,9 @@ import org.jeecg.common.aspect.annotation.AutoLog;
 public class BlogArticleController extends JeecgController<BlogArticle, IBlogArticleService> {
 	@Autowired
 	private IBlogArticleService blogArticleService;
-	
+
+	@Autowired
+	private IBlogArticleTagService blogArticleTagService;
 	/**
 	 * 分页列表查询
 	 *
@@ -181,7 +186,13 @@ public class BlogArticleController extends JeecgController<BlogArticle, IBlogArt
 		 blogArticle.setCreateBy(getUser().getUsername());
 		 blogArticle.setCategoryId(blogArticle.getBlogCategory().getId());
 		 blogArticleService.save(blogArticle);
-		 return Result.ok("添加成功！");
+		 for(BlogTag blogTag : blogArticle.getBlogTagList()){
+			 BlogArticleTag blogArticleTag = new BlogArticleTag();
+			 blogArticleTag.setArticle_id(blogArticle.getId());
+			 blogArticleTag.setTag_id(blogTag.getId());
+			 blogArticleTagService.save(blogArticleTag);
+		 }
+		 return Result.ok(blogArticle);
 	 }
 
 	 protected LoginUser getUser(){
